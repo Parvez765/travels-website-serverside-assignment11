@@ -7,20 +7,20 @@ const jwt = require('jsonwebtoken')
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
-function verifyJwt(req, res, next) {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-        return res.status(401).send({message: "UnAuthorized Access"})
-    }
-    const token = authHeader.split(" ")[1]
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
-        if (err) {
-            return res.status(401).send({message: "UnAuthorized Access"})
-        }
-        req.decoded = decoded
-        next()
-    })
-}
+// function verifyJwt(req, res, next) {
+//     const authHeader = req.headers.authorization;
+//     if (!authHeader) {
+//         return res.status(401).send({message: "UnAuthorized Access"})
+//     }
+//     const token = authHeader.split(" ")[1]
+//     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
+//         if (err) {
+//             return res.status(401).send({message: "UnAuthorized Access"})
+//         }
+//         req.decoded = decoded
+//         next()
+//     })
+// }
 
 // MiddleWare
 
@@ -88,12 +88,13 @@ async function run() {
 
         // Getting Data From Review Form
 
-        app.get("/customreview", verifyJwt, async (req, res) => {
+        app.get("/customreview",  async (req, res) => {
 
-            const decoded = req.decoded
-            if (decoded.email !== req.query.email) {
-               res.status(403).send({message: "Forbidden Access"})
-           } 
+        //     const decoded = req.decoded
+            
+        //     if (decoded.email !== req.query.email) {
+        //        res.status(403).send({message: "Forbidden Access"})
+        //    } 
            
             let query = {}
             if (req.query.email) {
@@ -125,16 +126,30 @@ async function run() {
             res.send(result)
         })
 
-        app.patch("/myreview/:id", async(req, res) => {
+        app.get("/customreview/:id", async (req, res) => {
             const id = req.params.id
-            const review = req.body.review
+            const query = {_id: ObjectId(id)}
+           
+            const result = await reviewCollection.findOne(query)
+            
+            console.log(result)
+            res.send(result)
+        })
+
+        app.patch("/myreview/:id", async (req, res) => {
+            
+            console.log("Inside", req.body.message)
+            const id = req.params.id
+            const review = req.body.message
             const query = { _id: ObjectId(id) }
+            console.log(id, review, query)
+           
             const updatedDoc = {
                 $set: {
                     review: review
                 }
             }
-            const result = await reviewCollection(query, updatedDoc)
+            const result = await reviewCollection.updateOne(query, updatedDoc)
             res.send(result)
        })
 
