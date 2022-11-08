@@ -22,7 +22,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 async function run() {
     try {
-        const serviceCollection = client.db("travlesCare").collection("services")
+        const serviceCollection = client.db("travelsCare").collection("services")
 
         // For 3 Services
         app.get("/services", async(req, res) => {
@@ -43,6 +43,15 @@ async function run() {
         // Service Detail Api With Dynamic Id
 
         app.get("/allservices/:id", async (req, res) => {
+            const id = req.params.id
+            const query = { _id: ObjectId(id) }
+            const result = await serviceCollection.findOne(query)
+            
+            res.send(result)
+        })
+
+        // Service Review
+        app.get("/allservices/:id", async(req, res) => {
             const id = req.params.id
             const query = { _id: ObjectId(id) }
             const result = await serviceCollection.findOne(query)
