@@ -62,6 +62,20 @@ async function run() {
 
         // Getting Data From Review Form
 
+        app.get("/cutomreview", async (req, res) => {
+            
+            let query = {}
+            if (req.query.email) {
+                query = {
+                    email: req.query.email
+                }
+            }
+            const cursor = reviewCollection.find(query)
+            const result = await cursor.toArray()
+            res.send(result)
+
+        })
+
         app.post("/customreview/:id", async(req, res)=>{
             const data = req.body
             
