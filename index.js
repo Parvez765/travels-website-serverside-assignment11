@@ -78,6 +78,14 @@ async function run() {
             res.send(result)
         })
 
+        app.post("/allservices", async(req, res) => {
+            const services = req.body
+            const result = await serviceCollection.insertOne(services)
+            console.log(result)
+            res.send(result)
+
+        })
+
         // Getting Data From Review Form
 
         app.get("/customreview", verifyJwt, async (req, res) => {
